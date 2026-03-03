@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midwest Seed Genetics — Territory</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --green-deep:   #0d2b1a;
+    --green-dark:   #163824;
+    --green-mid:    #1f4d31;
+    --green-bright: #2a6641;
+    --green-hover:  #357a50;
+    --gold:         #c9a84c;
+    --gold-light:   #e0c270;
+    --gold-pale:    #f5e6b8;
+    --gold-dim:     #7a6230;
+    --surface:      #122210;
+    --surface2:     #0a1a0c;
+    --border:       #1e3d27;
+    --border-light: #224530;
+    --text-primary: #f0ead8;
+    --text-secondary: #9db89f;
+    --text-muted:   #5a7a5e;
+    --mn-fill:      #b8923e;
+    --ia-fill:      #d4a84a;
+    --mn-active:    #f5d070;
+    --ia-active:    #ffe08a;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--green-deep);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    height: 56px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    background: var(--surface2);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .nav-left { display: flex; align-items: center; gap: 14px; }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--gold);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green-deep);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .nav-brand {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+  }
+
+  .nav-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border);
+  }
+
+  .nav-tag {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gold);
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.25);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.2px;
+  }
+
+  .nav-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 370px;
+    height: calc(100vh - 56px);
+  }
+
+  /* MAP PANEL */
+  .map-panel {
+    display: flex;
+    flex-direction: column;
+    padding: 36px 28px 28px 40px;
+    overflow: hidden;
+  }
+
+  .map-header { margin-bottom: 24px; }
+
+  .map-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold-dim);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .map-headline {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .map-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+    font-weight: 400;
+  }
+
+  .map-wrap {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  svg#map {
+    width: 100%;
+    height: 100%;
+    max-height: 460px;
+  }
+
+  .c-shape {
+    cursor: pointer;
+    stroke: var(--green-deep);
+    stroke-width: 2;
+    transition: fill 0.16s ease;
+  }
+
+  .c-shape.mn   { fill: var(--mn-fill); }
+  .c-shape.ia   { fill: var(--ia-fill); }
+  .c-shape:hover { fill: #f0c040; }
+  .c-shape.mn.active { fill: var(--mn-active); }
+  .c-shape.ia.active { fill: var(--ia-active); }
+
+  .c-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 7px;
+    font-weight: 700;
+    fill: var(--green-deep);
+    pointer-events: none;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    letter-spacing: 0.3px;
+    transition: fill 0.16s;
+  }
+
+  .c-label.active { fill: var(--green-deep); }
+
+  .state-div {
+    stroke: var(--border-light);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+  }
+
+  .state-bg-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    fill: var(--border-light);
+    text-anchor: middle;
+    opacity: 0.6;
+  }
+
+  .map-legend {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .pip {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+
+  /* Stats */
+  .stats-row {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+
+  .stat { padding-right: 14px; }
+  .stat + .stat {
+    padding-left: 14px;
+    padding-right: 14px;
+    border-left: 1px solid var(--border);
+  }
+  .stat:last-child { padding-right: 0; }
+
+  .stat-val {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-desc {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  /* List header */
+  .list-head {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .list-head-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .seg {
+    display: flex;
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 2px;
+    border: 1px solid var(--border);
+  }
+
+  .seg-btn {
+    background: none;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.12s;
+    letter-spacing: 0.5px;
+  }
+
+  .seg-btn.on {
+    background: var(--gold);
+    color: var(--green-deep);
+  }
+
+  /* County scroll */
+  .c-scroll {
+    flex: 1;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .c-scroll::-webkit-scrollbar { width: 3px; }
+  .c-scroll::-webkit-scrollbar-track { background: transparent; }
+  .c-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .c-row {
+    display: flex;
+    align-items: center;
+    padding: 11px 24px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    gap: 10px;
+    transition: background 0.1s;
+  }
+
+  .c-row:hover  { background: var(--surface); }
+  .c-row.active { background: rgba(201,168,76,0.07); }
+
+  .c-row-info { flex: 1; min-width: 0; }
+
+  .c-row-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .c-row.active .c-row-name { color: var(--gold-light); }
+
+  .c-row-state {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .c-row-right { text-align: right; flex-shrink: 0; }
+
+  .c-row-acres {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: -0.2px;
+  }
+
+  .c-row.active .c-row-acres { color: var(--gold); }
+
+  .c-row-sub {
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  /* Detail */
+  .detail {
+    border-top: 1px solid var(--border);
+    padding: 18px 24px 22px;
+    background: var(--surface2);
+  }
+
+  .detail-empty {
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 28px 0;
+    text-align: center;
+  }
+
+  .d-name {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .d-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gold);
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+  }
+
+  .d-note {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+
+  .d-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .d-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+  }
+
+  .d-card-val {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .d-card-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  /* Tooltip */
+  .tip {
+    position: fixed;
+    background: var(--surface2);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.1s;
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+
+  .tip.show { opacity: 1; }
+  .tip-name { font-weight: 600; margin-bottom: 2px; color: var(--text-primary); }
+  .tip-acres { color: var(--gold); font-size: 11px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <div class="nav-logo">
+      <div class="nav-logo-mark">MSG</div>
+      <span class="nav-brand">Midwest Seed Genetics</span>
+    </div>
+    <div class="nav-divider"></div>
+    <span class="nav-tag">Territory Intelligence</span>
+  </div>
+  <span class="nav-meta">North Central IA · South Central MN</span>
+</nav>
+
+<div class="layout">
+
+  <!-- MAP -->
+  <div class="map-panel">
+    <div class="map-header">
+      <div class="map-eyebrow">Market Analysis · 2025</div>
+      <div class="map-headline">Core Corn Territory</div>
+      <div class="map-sub">20 priority counties · ~1.1M estimated total corn acres</div>
+    </div>
+
+    <div class="map-wrap">
+      <svg id="map" viewBox="0 0 660 520" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- State labels -->
+        <text class="state-bg-label" x="330" y="110">MINNESOTA</text>
+        <text class="state-bg-label" x="330" y="390">IOWA</text>
+
+        <!-- State border -->
+        <line class="state-div" x1="30" y1="255" x2="630" y2="255"/>
+
+        <!-- ══ MINNESOTA COUNTIES (south central) ══ -->
+        <!-- Row 1 (northernmost) - Renville, Sibley, Le Sueur, Waseca, Steele -->
+        <rect class="c-shape mn" data-id="renville-mn"  x="36"  y="130" width="90" height="62" rx="4"/>
+        <rect class="c-shape mn" data-id="sibley-mn"    x="128" y="130" width="82" height="62" rx="4"/>
+        <rect class="c-shape mn" data-id="lesueur-mn"   x="212" y="130" width="80" height="62" rx="4"/>
+        <rect class="c-shape mn" data-id="waseca-mn"    x="294" y="130" width="76" height="62" rx="4"/>
+        <rect class="c-shape mn" data-id="nicollet-mn"  x="372" y="130" width="78" height="62" rx="4"/>
+
+        <!-- Row 2 - Redwood, Brown, Nicollet side / Watonwan, Faribault, Martin -->
+        <rect class="c-shape mn" data-id="redwood-mn"   x="36"  y="194" width="90" height="60" rx="4"/>
+        <rect class="c-shape mn" data-id="brown-mn"     x="128" y="194" width="82" height="60" rx="4"/>
+        <rect class="c-shape mn" data-id="watonwan-mn"  x="212" y="194" width="80" height="60" rx="4"/>
+        <rect class="c-shape mn" data-id="faribault-mn" x="294" y="194" width="76" height="60" rx="4"/>
+        <rect class="c-shape mn" data-id="martin-mn"    x="372" y="194" width="78" height="60" rx="4"/>
+
+        <!-- ══ IOWA COUNTIES (north central) ══ -->
+        <!-- Row 1 (northernmost Iowa) - Kossuth, Hancock, Cerro Gordo, Worth -->
+        <rect class="c-shape ia" data-id="kossuth-ia"   x="36"  y="268" width="86" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="hancock-ia"   x="124" y="268" width="80" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="cerrogordo-ia" x="206" y="268" width="82" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="franklin-ia"  x="290" y="268" width="78" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="wright-ia"    x="450" y="268" width="80" height="60" rx="4"/>
+
+        <!-- Row 2 - Pocahontas, Humboldt, Webster, Hamilton, Hardin -->
+        <rect class="c-shape ia" data-id="pocahontas-ia" x="36"  y="330" width="86" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="humboldt-ia"  x="124" y="330" width="80" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="webster-ia"   x="206" y="330" width="82" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="hamilton-ia"  x="290" y="330" width="78" height="60" rx="4"/>
+        <rect class="c-shape ia" data-id="hardin-ia"    x="370" y="330" width="78" height="60" rx="4"/>
+
+        <!-- Row 3 - Calhoun, Story, Boone -->
+        <rect class="c-shape ia" data-id="calhoun-ia"   x="36"  y="392" width="86" height="58" rx="4"/>
+        <rect class="c-shape ia" data-id="boone-ia"     x="290" y="392" width="78" height="58" rx="4"/>
+        <rect class="c-shape ia" data-id="story-ia"     x="370" y="392" width="78" height="58" rx="4"/>
+
+        <!-- MN Labels -->
+        <text class="c-label" data-for="renville-mn"  x="81"  y="161">RENVILLE</text>
+        <text class="c-label" data-for="sibley-mn"    x="169" y="161">SIBLEY</text>
+        <text class="c-label" data-for="lesueur-mn"   x="252" y="161">LE SUEUR</text>
+        <text class="c-label" data-for="waseca-mn"    x="332" y="161">WASECA</text>
+        <text class="c-label" data-for="nicollet-mn"  x="411" y="161">NICOLLET</text>
+        <text class="c-label" data-for="redwood-mn"   x="81"  y="224">REDWOOD</text>
+        <text class="c-label" data-for="brown-mn"     x="169" y="224">BROWN</text>
+        <text class="c-label" data-for="watonwan-mn"  x="252" y="224">WATONWAN</text>
+        <text class="c-label" data-for="faribault-mn" x="332" y="224">FARIBAULT</text>
+        <text class="c-label" data-for="martin-mn"    x="411" y="224">MARTIN</text>
+
+        <!-- IA Labels -->
+        <text class="c-label" data-for="kossuth-ia"   x="79"  y="298">KOSSUTH</text>
+        <text class="c-label" data-for="hancock-ia"   x="164" y="298">HANCOCK</text>
+        <text class="c-label" data-for="cerrogordo-ia" x="247" y="298">CERRO GORDO</text>
+        <text class="c-label" data-for="franklin-ia"  x="329" y="298">FRANKLIN</text>
+        <text class="c-label" data-for="wright-ia"    x="490" y="298">WRIGHT</text>
+
+        <text class="c-label" data-for="pocahontas-ia" x="79" y="360">POCAHONTAS</text>
+        <text class="c-label" data-for="humboldt-ia"  x="164" y="360">HUMBOLDT</text>
+        <text class="c-label" data-for="webster-ia"   x="247" y="360">WEBSTER</text>
+        <text class="c-label" data-for="hamilton-ia"  x="329" y="360">HAMILTON</text>
+        <text class="c-label" data-for="hardin-ia"    x="409" y="360">HARDIN</text>
+
+        <text class="c-label" data-for="calhoun-ia"   x="79"  y="421">CALHOUN</text>
+        <text class="c-label" data-for="boone-ia"     x="329" y="421">BOONE</text>
+        <text class="c-label" data-for="story-ia"     x="409" y="421">STORY</text>
+
+        <!-- Decorative corn icon -->
+        <g transform="translate(570, 160)" opacity="0.12">
+          <ellipse cx="30" cy="55" rx="14" ry="38" fill="#c9a84c"/>
+          <line x1="30" y1="17" x2="30" y2="93" stroke="#0d2b1a" stroke-width="2"/>
+          <line x1="16" y1="35" x2="44" y2="35" stroke="#0d2b1a" stroke-width="1.5"/>
+          <line x1="16" y1="45" x2="44" y2="45" stroke="#0d2b1a" stroke-width="1.5"/>
+          <line x1="16" y1="55" x2="44" y2="55" stroke="#0d2b1a" stroke-width="1.5"/>
+          <line x1="16" y1="65" x2="44" y2="65" stroke="#0d2b1a" stroke-width="1.5"/>
+          <line x1="18" y1="75" x2="42" y2="75" stroke="#0d2b1a" stroke-width="1.5"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="map-legend">
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#b8923e;"></div>
+        South Central Minnesota
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#d4a84a;"></div>
+        North Central Iowa
+      </div>
+      <div class="legend-item" style="margin-left: auto;">
+        <div class="pip" style="background:var(--gold);"></div>
+        High priority
+      </div>
+      <div class="legend-item">
+        <div class="pip" style="background:var(--text-muted);"></div>
+        Medium priority
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-val">~1.1M</div>
+        <div class="stat-desc">Total corn acres in territory</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">20</div>
+        <div class="stat-desc">Priority counties</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val">200+</div>
+        <div class="stat-desc">Avg bu/ac target area</div>
+      </div>
+    </div>
+
+    <div class="list-head">
+      <span class="list-head-label">Counties</span>
+      <div class="seg">
+        <button class="seg-btn on" data-f="all">All</button>
+        <button class="seg-btn" data-f="mn">MN</button>
+        <button class="seg-btn" data-f="ia">IA</button>
+      </div>
+    </div>
+
+    <div class="c-scroll" id="c-list"></div>
+
+    <div class="detail" id="detail">
+      <div class="detail-empty">Select a county to explore</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="tip" id="tip">
+  <div class="tip-name" id="tip-n"></div>
+  <div class="tip-acres" id="tip-a"></div>
+</div>
+
+<script>
+const counties = [
+  // MINNESOTA — South Central
+  { id:'renville-mn',  name:'Renville',   state:'mn', abbr:'MN', acres:540000, conv:54000, priority:'HIGH', yield:'208', note:'#1 corn production county in Minnesota — consistently over 50M bushels/yr. Massive cash grain operations, high CSR2 soils. MSG\'s highest-volume opportunity in MN.' },
+  { id:'sibley-mn',    name:'Sibley',     state:'mn', abbr:'MN', acres:300000, conv:30000, priority:'HIGH', yield:'200+', note:'Highest cash rent in Minnesota at $285/ac — signals elite corn ground. Progressive large-scale operators. Strong MSG profile for premium hybrids and direct sales.' },
+  { id:'lesueur-mn',   name:'Le Sueur',   state:'mn', abbr:'MN', acres:250000, conv:25000, priority:'MED',  yield:'195+', note:'Minnesota River corridor. Mix of mid-size and larger cash grain farms. Growing interest in input cost management — good Midwest Seed Genetics entry market.' },
+  { id:'waseca-mn',    name:'Waseca',     state:'mn', abbr:'MN', acres:280000, conv:28000, priority:'HIGH', yield:'215+', note:'Top 5 corn yield county in MN. University of Minnesota Southern Research Station located here — ag-progressive, data-literate farmer base. High-value target.' },
+  { id:'nicollet-mn',  name:'Nicollet',   state:'mn', abbr:'MN', acres:260000, conv:26000, priority:'HIGH', yield:'200+', note:'Mankato area — MSU ag hub. Cash grain dominant, competitive but worth strong presence. Second-highest cash rent corridor in SC Minnesota.' },
+  { id:'redwood-mn',   name:'Redwood',    state:'mn', abbr:'MN', acres:420000, conv:42000, priority:'HIGH', yield:'200+', note:'#2–3 corn production county in MN most years. Redwood Falls area. Large acreage operations, strong corn-soy rotation. MSG can gain meaningful share here.' },
+  { id:'brown-mn',     name:'Brown',      state:'mn', abbr:'MN', acres:320000, conv:32000, priority:'MED',  yield:'195+', note:'New Ulm area. Mix of corn and soybeans with some livestock integration. Solid mid-tier corn market, receptive to direct seed relationships.' },
+  { id:'watonwan-mn',  name:'Watonwan',   state:'mn', abbr:'MN', acres:300000, conv:30000, priority:'HIGH', yield:'209+', note:'Led all MN counties in corn yield (209.3 bpa) in 2023. Elite corn ground near St. James. Compact, high-density market — excellent MSG territory for direct outreach.' },
+  { id:'faribault-mn', name:'Faribault',  state:'mn', abbr:'MN', acres:380000, conv:38000, priority:'HIGH', yield:'215+', note:'Top 5 production county in MN. Wells/Blue Earth area, bordering Iowa. Heavy corn-soy rotation. Strategic crossover county into north Iowa — natural MSG bridge market.' },
+  { id:'martin-mn',    name:'Martin',     state:'mn', abbr:'MN', acres:440000, conv:44000, priority:'HIGH', yield:'224+', note:'Led MN in corn yield in 2022 (224.9 bpa). Fairmont area, directly on IA border. One of the best corn counties in the entire Upper Midwest. Top MSG priority.' },
+
+  // IOWA — North Central
+  { id:'kossuth-ia',    name:'Kossuth',    state:'ia', abbr:'IA', acres:580000, conv:58000, priority:'HIGH', yield:'200+', note:'Largest county in Iowa by area — massive corn footprint. Algona area. One of Iowa\'s top corn production counties by total bushels. High-volume MSG opportunity.' },
+  { id:'hancock-ia',    name:'Hancock',    state:'ia', abbr:'IA', acres:300000, conv:30000, priority:'HIGH', yield:'198+', note:'Garner area. Northern Iowa cash grain country bordering Minnesota. Corn-soy rotation dominant, compact geography — efficient for direct seed delivery.' },
+  { id:'cerrogordo-ia', name:'Cerro Gordo',state:'ia', abbr:'IA', acres:310000, conv:31000, priority:'MED',  yield:'190+', note:'Mason City area — regional ag hub. Mix of farm sizes. Good opportunity to establish MSG brand alongside ag retail competition in a visible market.' },
+  { id:'franklin-ia',   name:'Franklin',   state:'ia', abbr:'IA', acres:290000, conv:29000, priority:'HIGH', yield:'200+', note:'Hampton area. Strong corn-soy rotation, tile-drained prairie soils. ISU Extension presence. Responsive to direct-to-farmer seed model messaging.' },
+  { id:'wright-ia',     name:'Wright',     state:'ia', abbr:'IA', acres:300000, conv:30000, priority:'HIGH', yield:'210+', note:'Clarion area. ISU identifies Wright as a consistent top-yield county. Excellent corn genetics response. Strong MSG fit for performance-focused growers.' },
+  { id:'pocahontas-ia', name:'Pocahontas', state:'ia', abbr:'IA', acres:290000, conv:29000, priority:'HIGH', yield:'218+', note:'Pocahontas led Iowa in corn yield (218.1 bpa) in 2023. Premium corn ground. Cash rent averages $270/ac. High-yield, high-investment farmers who demand proven seed performance.' },
+  { id:'humboldt-ia',   name:'Humboldt',   state:'ia', abbr:'IA', acres:250000, conv:25000, priority:'MED',  yield:'200+', note:'Humboldt/Dakota City area. Solid north-central Iowa corn ground. Mid-size family operations mixed with larger cash grain — good Midwest Seed Genetics demographic.' },
+  { id:'webster-ia',    name:'Webster',    state:'ia', abbr:'IA', acres:350000, conv:35000, priority:'HIGH', yield:'200+', note:'Fort Dodge area — regional anchor city. Webster is one of NC Iowa\'s most productive counties by bushels. Excellent MSG territory, dealer-competitive but accessible.' },
+  { id:'hamilton-ia',   name:'Hamilton',   state:'ia', abbr:'IA', acres:300000, conv:30000, priority:'HIGH', yield:'210+', note:'Webster City area. Strong corn yields, progressive operators. ISU agronomist coverage. High-value target for MSG with above-average response to direct seed outreach.' },
+  { id:'hardin-ia',     name:'Hardin',     state:'ia', abbr:'IA', acres:290000, conv:29000, priority:'MED',  yield:'200+', note:'Eldora area. Solid corn-soy rotation, slightly lower dealer saturation than Story/Boone. Good entry point into south-central corridor of NC Iowa for MSG.' },
+  { id:'calhoun-ia',    name:'Calhoun',    state:'ia', abbr:'IA', acres:280000, conv:28000, priority:'MED',  yield:'200+', note:'Rockwell City area. Located between Webster and Pocahontas — strong corn genetics country. Underserved by direct seed companies, prime MSG market-building opportunity.' },
+  { id:'boone-ia',      name:'Boone',      state:'ia', abbr:'IA', acres:280000, conv:28000, priority:'HIGH', yield:'226+', note:'Led ALL Iowa counties in corn yield (226.5 bpa) in 2023. Ogden/Boone area. Elite corn ground — top-tier performance for MSG genetics demonstration. Must-win county.' },
+  { id:'story-ia',      name:'Story',      state:'ia', abbr:'IA', acres:260000, conv:26000, priority:'MED',  yield:'218+', note:'Ames/ISU. Top-5 Iowa corn yield county. Progressive, data-literate farmer base. ISU research partnerships possible. Good visibility market for MSG brand presence.' },
+];
+
+let active = null;
+let filter = 'all';
+const fmt = n => n >= 1000 ? Math.round(n/1000) + 'K' : n;
+
+function render() {
+  const list = document.getElementById('c-list');
+  const shown = filter === 'all' ? counties : counties.filter(d => d.state === filter);
+  list.innerHTML = shown.map(d => `
+    <div class="c-row${active === d.id ? ' active' : ''}" data-id="${d.id}">
+      <div class="pip" style="background:${d.priority === 'HIGH' ? 'var(--gold)' : 'var(--text-muted)'}; margin-top:3px;"></div>
+      <div class="c-row-info">
+        <div class="c-row-name">${d.name} County</div>
+        <div class="c-row-state">${d.state === 'mn' ? 'South Central Minnesota' : 'North Central Iowa'}</div>
+      </div>
+      <div class="c-row-right">
+        <div class="c-row-acres">${fmt(d.acres)}</div>
+        <div class="c-row-sub">total acres</div>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.c-row').forEach(row => {
+    row.addEventListener('click', () => select(row.dataset.id));
+  });
+}
+
+function select(id) {
+  active = id;
+  const d = counties.find(x => x.id === id);
+
+  document.querySelectorAll('.c-shape').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.c-label').forEach(l => l.classList.remove('active'));
+
+  const shape = document.querySelector(`.c-shape[data-id="${id}"]`);
+  if (shape) shape.classList.add('active');
+  document.querySelectorAll(`.c-label[data-for="${id}"]`).forEach(l => l.classList.add('active'));
+
+  document.getElementById('detail').innerHTML = `
+    <div class="d-name">${d.name} County, ${d.abbr}</div>
+    <div class="d-badge">
+      <div class="pip" style="background:${d.priority === 'HIGH' ? 'var(--gold)' : 'var(--text-muted)'};"></div>
+      ${d.state === 'mn' ? 'South Central Minnesota' : 'North Central Iowa'} · ${d.priority === 'HIGH' ? 'High' : 'Medium'} Priority
+    </div>
+    <div class="d-note">${d.note}</div>
+    <div class="d-grid">
+      <div class="d-card">
+        <div class="d-card-val">~${fmt(d.acres)}</div>
+        <div class="d-card-label">Total corn acres</div>
+      </div>
+      <div class="d-card">
+        <div class="d-card-val">${d.yield}</div>
+        <div class="d-card-label">Avg yield (bu/ac)</div>
+      </div>
+    </div>
+  `;
+
+  render();
+  const row = document.querySelector(`.c-row[data-id="${id}"]`);
+  if (row) row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Filter
+document.querySelectorAll('.seg-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    filter = btn.dataset.f;
+    document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    render();
+  });
+});
+
+// Map interactions
+const tip = document.getElementById('tip');
+document.querySelectorAll('.c-shape').forEach(shape => {
+  shape.addEventListener('click', () => select(shape.dataset.id));
+  shape.addEventListener('mouseenter', e => {
+    const d = counties.find(x => x.id === shape.dataset.id);
+    if (!d) return;
+    document.getElementById('tip-n').textContent = `${d.name} County, ${d.abbr}`;
+    document.getElementById('tip-a').textContent = `~${fmt(d.acres)} corn acres · ${d.yield} bu/ac avg`;
+    tip.classList.add('show');
+  });
+  shape.addEventListener('mousemove', e => {
+    tip.style.left = (e.clientX + 14) + 'px';
+    tip.style.top  = (e.clientY - 10) + 'px';
+  });
+  shape.addEventListener('mouseleave', () => tip.classList.remove('show'));
+});
+
+render();
+</script>
+</body>
+</html>
